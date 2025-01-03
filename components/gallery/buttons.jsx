@@ -8,7 +8,9 @@ import Link from "next/link";
 import { deleteImageFromGallery, MakeImageNotVisible, MakeImageVisible } from "@/actions/gallery-actions";
 import { Button } from "@/components/ui/button";
 
-export function EditImageBtn({ id }) {
+
+
+export function EditImageBtn({id }) {
   return (
     <Link className="absolute top-18 right-0 rounded-sm bg-green-400"
       href={`/admin/gallery/${id}/edit`}  >
@@ -61,6 +63,17 @@ export function SaveImageBtn() {
   );
 }
 
+export function CancelUpdateBtn() {
+  return (
+    <Link
+      href="/admin/gallery"
+      className="flex h-10 items-center rounded-lg bg-gray-400 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+    >
+      <span className="hidden md:block">Cancel</span>{" "}
+      <XCircleIcon className="h-6 md:ml-4" />
+    </Link>
+  );
+}
 // export function CreateProduct() {
 //   return (
 //     <Link

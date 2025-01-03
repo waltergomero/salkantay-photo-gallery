@@ -57,6 +57,61 @@ export const fetchImagesByCategory = async (category_id) => {
   }
 };
 
+export const fetchImageById = async (id) => {
+  try {
+    await db.connectDB();
+    const _image = await Gallery.findById(id).select('_id image_name category_id category_name path');
+    await db.disconnectDB();
+
+    const image = JSON.parse(JSON.stringify(_image));
+    return image;
+
+  } catch (err) {
+    return({error: "Failed to fetch image information!"});
+  }
+};
+
+export async function updateImageCategory(formData) {
+  console.log("formdata", formData)
+  try {
+    const id = formData.get("image_id");
+    const category_name = formData.get("category_name");
+    const category_id = formData.get("category_id");
+    const path = formData.get("path");
+    const image_name = formData.get("image_name");
+
+    await db.connectDB();
+    const query = {
+      category_name: category_name,
+      category_id: category_id,
+    };
+
+    await Gallery.updateOne({ _id: id}, query);
+
+    const imageExist = await HomePageCategories.findOne({ image_name: image_name });
+ 
+    if(imageExist){ //if image name exists, then update the category name and category id   
+      await HomePageCategories.updateOne({ _id: imageExist._id}, query);  
+     }
+    
+    else{
+    const categoryExist = await HomePageCategories.findOne({ category_name_name: category_name });
+
+    if(!categoryExist){ //if category do not exists, then add the category to the homepagecategories collection
+      const newItem = new HomePageCategories({
+        category_id,
+        category_name,
+        image_name,
+        path
+      });
+      await newItem.save();
+      }
+    await db.disconnectDB();
+    } 
+  }catch (err) {}
+    revalidatePath("/admin/gallery");
+  }
+
 
 export async function deleteImageFromGallery(image_id, image_path) {
   console.log("id and image path to delete", image_id, image_path)

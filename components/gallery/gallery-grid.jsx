@@ -26,7 +26,7 @@ const GalleryGrid =  ({images}) => {
             25vw"
         />
         <DeleteImageBtn image_id={item._id} image_path={item.path} />
-        <EditImageBtn image_id={item._id} image_path={item.path} />
+        <EditImageBtn id={item._id} path={item.path} />
         { item.make_visible ? 
             <SetImageNotVisible image_id={item._id} image_path={item.path} />         
             :  <SetImageVisible image_id={item._id} /> 
