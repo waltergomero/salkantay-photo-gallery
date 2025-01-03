@@ -89,28 +89,30 @@ export async function updateImageCategory(formData) {
     await Gallery.updateOne({ _id: id}, query);
 
     const imageExist = await HomePageCategories.findOne({ image_name: image_name });
- 
-    if(imageExist){ //if image name exists, then update the category name and category id   
-      await HomePageCategories.updateOne({ _id: imageExist._id}, query);  
-     }
-    
-    else{
     const categoryExist = await HomePageCategories.findOne({ category_name_name: category_name });
 
-    if(!categoryExist){ //if category do not exists, then add the category to the homepagecategories collection
-      const newItem = new HomePageCategories({
-        category_id,
-        category_name,
-        image_name,
-        path
-      });
-      await newItem.save();
-      }
-    await db.disconnectDB();
-    } 
-  }catch (err) {}
-    revalidatePath("/admin/gallery");
-  }
+    //delete the image from the homepagecategories collection if image and category exists
+    if(imageExist && categoryExist){  
+        await HomePageCategories.findByIdAndDelete(imageExist._id);  
+     }
+    else if(imageExist && !categoryExist){ //update the image name and path in the homepagecategories collection
+      await HomePageCategories.updateOne({ _id: imageExist._id}, query);
+     }
+    else{
+        if(!imageExist && !categoryExist){ //if category do not exists, then add the category to the homepagecategories collection
+          const newItem = new HomePageCategories({
+            category_id,
+            category_name,
+            image_name,
+            path
+          });
+          await newItem.save();
+          }
+      } 
+      await db.disconnectDB();
+    }catch (err) {}
+      revalidatePath("/admin/gallery");
+    }
 
 
 export async function deleteImageFromGallery(image_id, image_path) {
